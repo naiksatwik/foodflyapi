@@ -5,7 +5,8 @@ const UserSchema=new mongoose.Schema({
     email:{type:String, unique:true},
     password:{type:String,required:true},
 },{
-    collation:"User"
+    collation:"User",
+    timestamps:true,
 })
 
 mongoose.model('User',UserSchema)
