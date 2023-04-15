@@ -42,7 +42,7 @@ mongoose.connect(MongoUrl,{
 //user info
 const User=mongoose.model('User');
 app.post('/api/register',async(req,res)=>{
-    const {name,email,password}=req.body;
+    const {name,email,password,address,phone}=req.body;
     user=email;
     const encryptPassword = await bcrypt.hash(password,10)
      try{
@@ -54,7 +54,9 @@ app.post('/api/register',async(req,res)=>{
         await User.create({
             name:name,
             email:email,
-            password:encryptPassword
+            password:encryptPassword,
+            address,
+            phone,
         })
         res.send({
             status:"ok"
@@ -65,7 +67,6 @@ app.post('/api/register',async(req,res)=>{
         })
     }
 })
-
 
 app.post('/api/sign-in', async(req,res)=>{
     const {email,password}=req.body;
@@ -86,6 +87,8 @@ app.post('/api/sign-in', async(req,res)=>{
                 data:token,
                 profile:registeredEmail.name,
                 userId:registeredEmail._id,
+                address:registeredEmail.address,
+                phone:registeredEmail.phone
             })
         }else{
             return res.json({
@@ -100,11 +103,16 @@ app.post('/api/sign-in', async(req,res)=>{
 })
 
 
+//user Order data
 const UserOrder =mongoose.model('UserOrder');
 
 app.post('/api/orderData',async(req,res)=>{
-     const {email,order_data,phone,address}=req.body;
-     await order_data.splice(0,0,{order_date:req.body.order_date})
+     const {email,order_data,address,phone,order_date}=req.body;
+     console.log("address:",address)
+     console.log("phone:",phone)
+
+     await  order_data.splice(0,0,{order_date:order_date})
+    // await order_data
 
      let emailId=await UserOrder.findOne({email});
 
@@ -113,8 +121,8 @@ app.post('/api/orderData',async(req,res)=>{
            await UserOrder.create({
                 email,
                 order_data,
-                phone:phone,
-                address:address,
+                address,
+                phone
             })
 
             res.send({
@@ -140,4 +148,18 @@ app.post('/api/orderData',async(req,res)=>{
             })
         }
      }
+})
+
+app.post('/api/myOrder',async(req,res)=>{
+    const {email}=req.body
+  try{
+    let myData= await UserOrder.findOne({email});
+    res.json({
+        order_data:myData
+    })
+  }catch(err){
+    res.send({
+        mess:"Internal Server Error"
+    })
+  }
 })
