@@ -4,7 +4,7 @@ const app=express();
 const cors=require('cors')
 const bcrypt=require('bcryptjs')
 const jwt =require('jsonwebtoken')
-
+const  ObjectId = require('mongodb').ObjectId;
 const JWT_SECRET="vufyterityr56i448987r8@%$@$#^6787v_++69867338";
 
 
@@ -21,6 +21,7 @@ app.listen(5000,()=>{
 // importing from models
 require('./model/User')
 require('./model/Order')
+require('./model/Product')
 
 
 // const MongoUrl='mongodb://127.0.0.1:27017/rest-api?authSource=admin&w=1'
@@ -37,7 +38,6 @@ mongoose.connect(MongoUrl,{
 }).catch((err)=>{
     console.log(err)
 })
-
 
 //user info
 const User=mongoose.model('User');
@@ -67,7 +67,6 @@ app.post('/api/register',async(req,res)=>{
         })
     }
 })
-
 app.post('/api/sign-in', async(req,res)=>{
     const {email,password}=req.body;
     const registeredEmail= await User.findOne({email});
@@ -102,15 +101,13 @@ app.post('/api/sign-in', async(req,res)=>{
     })
 })
 
-
 //user Order data
 const UserOrder =mongoose.model('UserOrder');
-
 app.post('/api/orderData',async(req,res)=>{
      const {email,order_data,address,phone,order_date}=req.body;
      console.log("address:",address)
      console.log("phone:",phone)
-
+  
      await  order_data.splice(0,0,{order_date:order_date})
     // await order_data
 
@@ -134,6 +131,7 @@ app.post('/api/orderData',async(req,res)=>{
             })
         }
      }else{
+        
         try{
             await UserOrder.findOneAndUpdate({email},
             {$push:{order_data}}).then(()=>{
@@ -149,7 +147,6 @@ app.post('/api/orderData',async(req,res)=>{
         }
      }
 })
-
 app.post('/api/myOrder',async(req,res)=>{
     const {email}=req.body
   try{
@@ -162,4 +159,62 @@ app.post('/api/myOrder',async(req,res)=>{
         mess:"Internal Server Error"
     })
   }
+})
+
+// product api
+const Products= mongoose.model('Products') 
+app.post('/api/products',async(req,res)=>{
+    const {product,item}= req.body;
+
+    try{
+        await Products.create({
+            product,
+            item,
+        })
+
+        res.send({
+            status:"ok"
+        })
+    }catch(err){
+        res.send({
+            mess:err
+        })
+    }
+})
+app.get('/api/products',async(req,res)=>{
+    //  let data=Products.find({ "_id" :"643bb4bb39182745f0fe63d3"})
+ 
+       await  Products.findById(new ObjectId("643b99bc84c5083ba4bd018d"))
+          .then(doc => {
+            res.send({
+                data:doc.product,
+            })
+          })
+          .catch(err => {
+            console.log(err);
+          });
+})
+app.post('/api/addProduct',async(req,res)=>{
+    const {name,category,image,price,noItem}=req.body;
+    let data={
+        name,
+        category,
+        image,
+        price,
+        noItem
+    }
+
+    try{
+        await Products.findByIdAndUpdate(new ObjectId("643b99bc84c5083ba4bd018d"),{
+            $push:{product:data}}).then(()=>{
+                res.send({
+                    mess:"product is updated...",
+                    status:"ok"
+                })
+            })
+    }catch(err){
+        res.send({
+            mess:"Internal Server Error"
+        })
+    }
 })
