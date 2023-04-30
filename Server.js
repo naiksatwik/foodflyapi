@@ -7,10 +7,8 @@ const jwt =require('jsonwebtoken')
 const  ObjectId = require('mongodb').ObjectId;
 const JWT_SECRET="vufyterityr56i448987r8@%$@$#^6787v_++69867338";
 
-
 app.use(cors());
 app.use(express.json());
-
 
 // Our server
 app.listen(5000,()=>{
@@ -42,7 +40,7 @@ mongoose.connect(MongoUrl,{
 //user info
 const User=mongoose.model('User');
 app.post('/api/register',async(req,res)=>{
-    const {name,email,password,address,phone}=req.body;
+    const {name,email,password,address,phone,UserType}=req.body;
     user=email;
     const encryptPassword = await bcrypt.hash(password,10)
      try{
@@ -57,6 +55,7 @@ app.post('/api/register',async(req,res)=>{
             password:encryptPassword,
             address,
             phone,
+            UserType
         })
         res.send({
             status:"ok"
@@ -87,7 +86,8 @@ app.post('/api/sign-in', async(req,res)=>{
                 profile:registeredEmail.name,
                 userId:registeredEmail._id,
                 address:registeredEmail.address,
-                phone:registeredEmail.phone
+                phone:registeredEmail.phone,
+                UserType:registeredEmail.UserType,
             })
         }else{
             return res.json({
@@ -100,6 +100,7 @@ app.post('/api/sign-in', async(req,res)=>{
         error:"invalid password"
     })
 })
+
 
 //user Order data
 const UserOrder =mongoose.model('UserOrder');
