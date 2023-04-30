@@ -120,7 +120,7 @@ app.post('/api/orderData',async(req,res)=>{
                 email,
                 order_data,
                 address,
-                phone
+                phone,
             })
 
             res.send({
