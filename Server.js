@@ -16,6 +16,7 @@ app.listen(5000,()=>{
 })
 
 
+
 // importing from models
 require('./model/User')
 require('./model/Order')
@@ -36,6 +37,8 @@ mongoose.connect(MongoUrl,{
 }).catch((err)=>{
     console.log(err)
 })
+
+
 
 //user info
 const User=mongoose.model('User');
@@ -185,7 +188,7 @@ app.post('/api/products',async(req,res)=>{
 app.get('/api/products',async(req,res)=>{
     //  let data=Products.find({ "_id" :"643bb4bb39182745f0fe63d3"})
  
-       await  Products.findById(new ObjectId("643b99bc84c5083ba4bd018d"))
+       await  Products.findById(new ObjectId("64562c81d6b2f12cbd3c17e0"))
           .then(doc => {
             res.send({
                 data:doc.product,
@@ -196,8 +199,9 @@ app.get('/api/products',async(req,res)=>{
           });
 })
 app.post('/api/addProduct',async(req,res)=>{
-    const {name,category,image,price,noItem}=req.body;
+    const {id,name,category,image,price,noItem}=req.body;
     let data={
+        id,
         name,
         category,
         image,
@@ -206,7 +210,7 @@ app.post('/api/addProduct',async(req,res)=>{
     }
 
     try{
-        await Products.findByIdAndUpdate(new ObjectId("643b99bc84c5083ba4bd018d"),{
+        await Products.findByIdAndUpdate(new ObjectId("64562c81d6b2f12cbd3c17e0"),{
             $push:{product:data}}).then(()=>{
                 res.send({
                     mess:"product is updated...",
