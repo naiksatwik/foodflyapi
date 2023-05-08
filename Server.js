@@ -3,7 +3,8 @@ const mongoose=require('mongoose')
 const app=express();
 const cors=require('cors')
 const bcrypt=require('bcryptjs')
-const jwt =require('jsonwebtoken')
+const jwt =require('jsonwebtoken');
+const { number } = require('joi');
 const  ObjectId = require('mongodb').ObjectId;
 const JWT_SECRET="vufyterityr56i448987r8@%$@$#^6787v_++69867338";
 
@@ -223,3 +224,21 @@ app.post('/api/addProduct',async(req,res)=>{
         })
     }
 })
+app.post('/api/delProduct',async(req,res)=>{
+    const {id}=req.body;
+    const ids=parseInt(id)
+    try{
+        await Products.findByIdAndUpdate(new ObjectId('64562c81d6b2f12cbd3c17e0'),{
+            $pull:{product:{id:ids}}}).then(()=>{
+                res.send({
+                    mess:"Product removed",
+                    status:"ok"
+                })
+            })
+    }catch(err){
+        res.send({
+            mess:"Internal Server Error"
+        })
+    }
+})
+
