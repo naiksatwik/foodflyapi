@@ -22,6 +22,8 @@ app.listen(5000,()=>{
 require('./model/User')
 require('./model/Order')
 require('./model/Product')
+require('./model/OrderDetails')
+
 
 
 // const MongoUrl='mongodb://127.0.0.1:27017/rest-api?authSource=admin&w=1'
@@ -242,3 +244,40 @@ app.post('/api/delProduct',async(req,res)=>{
     }
 })
 
+
+//admin display
+const OrderDetail=mongoose.model('OrderDetails');
+app.post('/api/ProductToAdmin',async(req,res)=>{
+    const {email,order_data,address,userName,phone,status,Time}=req.body;
+
+    try{
+        await OrderDetail.create({
+            email,
+            order_data,
+            address,
+            userName,
+            phone,
+            status,
+            Time
+        })
+
+        res.send(({
+            status:"ok"
+        }))
+        
+    }catch(err){
+       res.send({
+           mess:err
+       })
+    }
+
+})
+
+app.get('/api/ProductToAdmin',async(req,res)=>{
+     try{
+       const allData=await OrderDetail.find({});
+       res.send({status:"ok",data:allData})
+     }catch(err){
+
+     }
+})
